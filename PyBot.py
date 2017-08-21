@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-import socket;
+import socket as so;
 import sys;
 HOST = "irc.freenode.net"
-PORT = 6667
+PORT = 6697
+SSL = True
 NICK = "TimsPyBot"
 channels = [ "#botwar" ];
-s = socket.socket()
+if SSL:
+	import ssl
+	c = ssl.create_default_context()
+	s = c.wrap_socket(so.socket(so.AF_INET), server_hostname=HOST)	
+else:
+	s = so.socket()
 s.connect((HOST, PORT))
 def msg(msg, rec):
 	send("PRIVMSG " + rec + " :" + msg)
@@ -35,7 +41,3 @@ while True:
 				send("QUIT")
 				print("Quit requested by " + nick)
 				sys.exit(1)
-				
-
-		
-	
