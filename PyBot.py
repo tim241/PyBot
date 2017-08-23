@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import socket as so;
 import sys;
-HOST = "irc.freenode.net"
-PORT = 6697
-SSL = True
+HOST = "irc.sorcery.net"
+PORT = 6667
+SSL = False
 NICK = "TimsPyBot"
+PREFIX = ">"
 channels = [ "#botwar" ];
+p = PREFIX
 if SSL:
 	import ssl
 	c = ssl.create_default_context()
@@ -31,13 +33,16 @@ while True:
 			send("JOIN " + channel)
 	if len(raw) > 3:
 		nick = raw[0].split('!')[0][1:]
-		if raw[3] == ":>help":
-				msg("Commands: help, kick", raw[2])
-		elif raw[3] == ":>kick":
-				send("KICK " + raw[2] + " " +  raw[4] + " :kick requested by " + nick)
-		elif raw[3] == ":>join":
+		if raw[3] == ":" + p + "help":
+				msg("Commands: help, kick, join, quit", raw[2])
+		elif raw[3] == ":" + p + "kick":
+				if len(raw) > 5:
+					send("KICK " + raw[2] + " " + raw[4] + " :" + raw[5])
+				else:
+					send("KICK " + raw[2] + " " +  raw[4] + " :kick requested by " + nick)
+		elif raw[3] == ":" + p + "join":
 				send("JOIN " + raw[4]) 
-		elif raw[3] == ":>quit":
+		elif raw[3] == ":" + p + "quit":
 				send("QUIT")
 				print("Quit requested by " + nick)
 				sys.exit(1)
