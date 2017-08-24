@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import socket as so;
 import sys;
-HOST = "irc.sorcery.net"
-PORT = 6667
-SSL = False
+HOST = "irc.freenode.net"
+PORT = 6697
+SSL = True
+JOIN = True
 NICK = "TimsPyBot"
-PREFIX = ">"
+PREFIX = "."
 channels = [ "#botwar" ];
 p = PREFIX
 if SSL:
@@ -26,23 +27,23 @@ while True:
 	data = s.recv(1024).decode()
 	raw = data.split()
 	print(data)
-	if raw[0] == "PING":
-		send("PONG " + raw[1])
-	if raw[1] == "001":
-		for channel in channels:
-			send("JOIN " + channel)
+	if len(raw) > 1:
+		if raw[0] == "PING":
+			send("PONG " + raw[1])
+		if raw[1].isdigit() & JOIN:
+			for channel in channels:
+				send("JOIN " + channel)
+				JOIN = False
 	if len(raw) > 3:
 		nick = raw[0].split('!')[0][1:]
 		if raw[3] == ":" + p + "help":
-				msg("Commands: help, kick, join, quit", raw[2])
+				msg("Commands: help, kick, join", raw[2])
 		elif raw[3] == ":" + p + "kick":
+			if len(raw) > 4:
 				if len(raw) > 5:
 					send("KICK " + raw[2] + " " + raw[4] + " :" + raw[5])
 				else:
-					send("KICK " + raw[2] + " " +  raw[4] + " :kick requested by " + nick)
+					send("KICK " + raw[2] + " " +  raw[4] + " :kick requested by " + nick)				
 		elif raw[3] == ":" + p + "join":
+			if len(raw) > 4:
 				send("JOIN " + raw[4]) 
-		elif raw[3] == ":" + p + "quit":
-				send("QUIT")
-				print("Quit requested by " + nick)
-				sys.exit(1)

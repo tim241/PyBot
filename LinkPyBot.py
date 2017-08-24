@@ -7,9 +7,9 @@ from urllib.parse import urlsplit
 HOST = "irc.freenode.net"
 PORT = 6697
 SSL = True
+JOIN = True
 NICK = "TimsPyBot"
 channels = [ "#botwar" ];
-p = PREFIX
 if SSL:
 	import ssl
 	c = ssl.create_default_context()
@@ -36,11 +36,13 @@ while True:
 	data = s.recv(1024).decode()
 	raw = data.split()
 	print(data)
-	if raw[0] == "PING":
-		send("PONG " + raw[1])
-	if raw[1] == "001":
-		for channel in channels:
-			send("JOIN " + channel)
+	if len(raw) > 1:
+		if raw[0] == "PING":
+			send("PONG " + raw[1])
+		if raw[1].isdigit() & JOIN:
+			for channel in channels:
+				send("JOIN " + channel)
+				JOIN = False
 	if len(raw) > 3:
 		if raw[3].startswith(":https://"):
 			GetTitle(raw[3][1:], raw[2])
