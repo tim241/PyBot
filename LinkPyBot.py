@@ -40,9 +40,9 @@ while True:
 		if raw[0] == "PING":
 			send("PONG " + raw[1])
 		if raw[1].isdigit() & JOIN:
+			JOIN = False
 			for channel in channels:
 				send("JOIN " + channel)
-				JOIN = False
 	if len(raw) > 3:
 		if raw[3].startswith(":https://"):
 			GetTitle(raw[3][1:], raw[2])
